@@ -4,6 +4,7 @@ open System.Diagnostics
 
 module OsPath = 
     let fileName = Path.GetFileName
+    let absPath = Path.GetFullPath
 
 let doCopy (srcdir: string) (tgtdir: string) = 
     let srcFiles = Directory.GetFiles(srcdir, "*.*") |> Array.filter File.Exists 
@@ -22,7 +23,7 @@ let doCopy (srcdir: string) (tgtdir: string) =
 
     let reportTargetDirs =
         let targetDirs = found |> Array.map (snd >> Path.GetDirectoryName) |> Set.ofArray
-        printfn "Copying to"
+        printfn "Copying %d files to:" srcFiles.Length
         targetDirs |> Set.iter (printfn "  %s")  
         ()
 
@@ -51,15 +52,14 @@ let doCopy (srcdir: string) (tgtdir: string) =
 
     sw.Stop()
     if not failed then 
-        printfn "Copied %d times in %f sec" found.Length ((float sw.ElapsedMilliseconds)/1000.0)
+        printfn "Copied %d times in %.2f sec" found.Length ((float sw.ElapsedMilliseconds)/1000.0)
     ()
 
 [<EntryPoint>]
 let main argv =
     match argv with
     | [| srcDir; tgtDir|] ->
-        doCopy srcDir tgtDir
-        ()
+        doCopy (OsPath.absPath srcDir) (OsPath.absPath tgtDir)
     | _ -> printfn "Usage:\npropagate <SOURCEDIR> <TARGETDIR>" 
 
     0 // return an integer exit code
