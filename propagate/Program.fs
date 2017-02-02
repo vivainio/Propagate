@@ -4,7 +4,6 @@ open System.Diagnostics
 
 module OsPath = 
     let fileName = Path.GetFileName
-    
 
 let doCopy (srcdir: string) (tgtdir: string) = 
     let srcFiles = Directory.GetFiles(srcdir, "*.*") |> Array.filter File.Exists 
@@ -34,29 +33,33 @@ let doCopy (srcdir: string) (tgtdir: string) =
                 true
             with
             | :? IOException as e when e.HResult &&& 0xffff = 32 ->
-                printfn "INUSE: %s" tgt
+                printfn "ERR file locked: %s" tgt
                 false
             
         seq {
             for tgt in targets do
                 yield tryCopy src tgt
-        } |> Seq.takeWhile id |> Array.ofSeq |> ignore
+        } 
             
     let sw = Stopwatch.StartNew()
-    for src, tgts in copyGroups do
-        copyTo src tgts
+
+    let failed = 
+        seq {
+            for src, tgts in copyGroups do
+                yield! copyTo src tgts
+        } |> Seq.exists (id >> not)
+
     sw.Stop()
-    printfn "Copied %d files %d msec" found.Length sw.ElapsedMilliseconds
+    if not failed then 
+        printfn "Copied %d times in %f sec" found.Length ((float sw.ElapsedMilliseconds)/1000.0)
     ()
 
 [<EntryPoint>]
 let main argv =
-
     match argv with
     | [| srcDir; tgtDir|] ->
         doCopy srcDir tgtDir
         ()
     | _ -> printfn "Usage:\npropagate <SOURCEDIR> <TARGETDIR>" 
 
-    printfn "%A" argv
     0 // return an integer exit code

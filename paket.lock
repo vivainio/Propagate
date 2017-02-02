@@ -1,0 +1,4 @@
+FRAMEWORK: >= NET452
+NUGET
+  remote: https://www.nuget.org/api/v2
+    System.ValueTuple (4.3)
