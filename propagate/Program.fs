@@ -2,12 +2,18 @@
 open System.IO
 open System.Diagnostics
 
+// something that looks like Python, just 'cause
 module OsPath = 
     let fileName = Path.GetFileName
     let absPath = Path.GetFullPath
+    let isDir = Directory.Exists
 
-let doCopy (srcdir: string) (tgtdir: string) = 
-    let srcFiles = Directory.GetFiles(srcdir, "*.*") |> Array.filter File.Exists 
+module Glob =
+    let SearchFromCwd pats =
+        pats |> Array.collect (Fake.Globbing.search "." >> Array.ofList)
+
+
+let doCopy (srcFiles: string[])  (tgtdir: string) = 
     let srcMap = srcFiles |> Array.map (fun e -> (OsPath.fileName e, e)) |> Map.ofArray
     
     let tgtFiles = Directory.GetFileSystemEntries(tgtdir, "*.*", SearchOption.AllDirectories) |> Array.filter File.Exists
@@ -55,11 +61,26 @@ let doCopy (srcdir: string) (tgtdir: string) =
         printfn "Copied %d times in %.2f sec" found.Length ((float sw.ElapsedMilliseconds)/1000.0)
     ()
 
+let copyDir srcDir tgtDir = 
+    let srcFiles = Directory.GetFiles(srcDir, "*.*") |> Array.filter File.Exists
+    doCopy srcFiles tgtDir
+
+
+let copyFilePatterns patterns tgtDir = 
+    let expanded = Glob.SearchFromCwd patterns |> Array.filter File.Exists
+    doCopy expanded tgtDir
+
 [<EntryPoint>]
 let main argv =
     match argv with
-    | [| srcDir; tgtDir|] ->
-        doCopy (OsPath.absPath srcDir) (OsPath.absPath tgtDir)
-    | _ -> printfn "Usage:\npropagate <SOURCEDIR> <TARGETDIR>" 
+    | [| srcDir; tgtDir|] when OsPath.isDir srcDir && OsPath.isDir tgtDir ->
+        copyDir (OsPath.absPath srcDir) (OsPath.absPath tgtDir)
+
+    | arr when arr.Length > 1 ->
+        let tgtDir = Array.last arr
+        let srcPats = arr.[0..arr.Length - 2]
+        copyFilePatterns srcPats tgtDir        
+
+    | _ -> printfn "Usage:\npropagate <SOURCEDIR> <TARGETDIR>\npropagate <GLOBPATTERN>... <TARGETDIR>" 
 
     0 // return an integer exit code

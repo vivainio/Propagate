@@ -2,3 +2,6 @@ FRAMEWORK: >= NET452
 NUGET
   remote: https://www.nuget.org/api/v2
     System.ValueTuple (4.3)
+GITHUB
+  remote: fsharp/FAKE
+    src/app/FakeLib/Globbing/Globbing.fs (e842705560e95dd75dd2c6a78fb1ae62db545297)

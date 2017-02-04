@@ -2,3 +2,4 @@ source https://www.nuget.org/api/v2/
 framework >= net452
 
 nuget System.ValueTuple 4.3.0
+github fsharp/FAKE src/app/FakeLib/Globbing/Globbing.fs

@@ -54,6 +54,10 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <Compile Include="..\paket-files\fsharp\FAKE\src\app\FakeLib\Globbing\Globbing.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/Globbing.fs</Link>
+    </Compile>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
