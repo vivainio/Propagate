@@ -1,6 +1,7 @@
 ﻿// propagate
 open System.IO
 open System.Diagnostics
+open Argu
 
 // something that looks like Python, just 'cause
 module OsPath = 
@@ -12,9 +13,28 @@ module Glob =
     let SearchFromCwd pats =
         pats |> Array.collect (Fake.Globbing.search "." >> Array.ofList)
 
+type CLIArguments =
+    | Dry
+    | Verbose
+    | [<MainCommand; ExactlyOnce; Last>] Paths of string list
+with 
+    interface IArgParserTemplate with
+        member x.Usage = 
+            match x with  
+            | Dry -> "Dry run (do not copy anything)"
+            | Verbose -> "Show more diagnostics"
+            | Paths _ -> "Paths: either <SOURCEDIR> <TARGETDIR> or <GLOBPATTERNS>... <TARGETDIR>"
 
-let doCopy (srcFiles: string[])  (tgtdir: string) = 
+type Env = {
+    Args: ParseResults<CLIArguments>
+}
+
+            
+let doCopy (env: Env) (srcFiles: string[])  (tgtdir: string) = 
     let srcMap = srcFiles |> Array.map (fun e -> (OsPath.fileName e, e)) |> Map.ofArray
+
+    let dry = env.Args.Contains <@ Dry @>
+    let verbose = env.Args.Contains <@ Verbose @>
     
     let tgtFiles = Directory.GetFileSystemEntries(tgtdir, "*.*", SearchOption.AllDirectories) |> Array.filter File.Exists
     let found = tgtFiles |> Array.choose (fun e ->
@@ -29,14 +49,21 @@ let doCopy (srcFiles: string[])  (tgtdir: string) =
 
     let reportTargetDirs =
         let targetDirs = found |> Array.map (snd >> Path.GetDirectoryName) |> Set.ofArray
+        if verbose then do
+            printfn "Source files: %A" srcFiles
+
         printfn "Copying %d files to:" srcFiles.Length
         targetDirs |> Set.iter (printfn "  %s")  
         ()
 
     let copyTo (src: string) (targets: #seq<string>) =
         let tryCopy src tgt =
-            try 
-                File.Copy(src, tgt, true)
+            try
+                if dry || verbose then
+                    printfn "%s -> %s" src tgt
+
+                if not dry then
+                    File.Copy(src, tgt, true)
                 true
             with
             | :? IOException as e when e.HResult &&& 0xffff = 32 ->
@@ -61,26 +88,42 @@ let doCopy (srcFiles: string[])  (tgtdir: string) =
         printfn "Copied %d times in %.2f sec" found.Length ((float sw.ElapsedMilliseconds)/1000.0)
     ()
 
-let copyDir srcDir tgtDir = 
+let copyDir (env: Env) srcDir tgtDir = 
     let srcFiles = Directory.GetFiles(srcDir, "*.*") |> Array.filter File.Exists
-    doCopy srcFiles tgtDir
+    doCopy env srcFiles tgtDir
 
 
-let copyFilePatterns patterns tgtDir = 
+let copyFilePatterns (env: Env) patterns tgtDir = 
     let expanded = Glob.SearchFromCwd patterns |> Array.filter File.Exists
-    doCopy expanded tgtDir
+    doCopy env expanded tgtDir
 
 [<EntryPoint>]
 let main argv =
-    match argv with
-    | [| srcDir; tgtDir|] when OsPath.isDir srcDir && OsPath.isDir tgtDir ->
-        copyDir (OsPath.absPath srcDir) (OsPath.absPath tgtDir)
+    let parser = ArgumentParser.Create<CLIArguments>(programName = "propagate")
 
-    | arr when arr.Length > 1 ->
-        let tgtDir = Array.last arr
-        let srcPats = arr.[0..arr.Length - 2]
-        copyFilePatterns srcPats tgtDir        
+    let handlePaths env paths = 
+        match paths with
+        | [ srcDir; tgtDir ] when OsPath.isDir srcDir && OsPath.isDir tgtDir ->
+            copyDir env (OsPath.absPath srcDir) (OsPath.absPath tgtDir)
 
-    | _ -> printfn "Usage:\npropagate <SOURCEDIR> <TARGETDIR>\npropagate <GLOBPATTERN>... <TARGETDIR>" 
+        | arr when arr.Length > 1 ->
+            let tgtDir = List.last arr
+            let srcPats = arr.[0..arr.Length - 2] |> Array.ofList
+            copyFilePatterns env srcPats tgtDir        
+
+        | _ -> printfn "%s" <| parser.PrintUsage()
+    
+    let ok = 
+        try 
+            let args = parser.ParseCommandLine(ignoreUnrecognized = false)
+            let env = {
+                Args = args
+            }
+            handlePaths env (args.GetResult <@ Paths @>) 
+            true
+        with 
+        | :? ArguParseException as e -> 
+            printfn "[%s]" e.Message
+            false
 
     0 // return an integer exit code

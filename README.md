@@ -10,7 +10,7 @@ In .NET projects, this can be handy e.g. when you have compiled an own version o
 
 With [zippim](https://github.com/vivainio/zippim):
 ```
-zippim get https://github.com/vivainio/Propagate/releases/download/v0.1/propagate.zip
+zippim get https://github.com/vivainio/Propagate/releases/download/v0.2/propagate.zip
 ```
 
 (or just unzip that release directly, for less zippim-savvy users)
@@ -20,7 +20,17 @@ zippim get https://github.com/vivainio/Propagate/releases/download/v0.1/propagat
 Usage:
 
 ```
-propagate <SOURCEDIR> <TARGETDIR>
+USAGE: propagate [--help] [--dry] [--verbose] <string>...
+
+PATHS:
+
+    <string>...           Paths: either <SOURCEDIR> <TARGETDIR> or <GLOBPATTERNS>... <TARGETDIR>
+
+OPTIONS:
+
+    --dry                 Dry run (do not copy anything)
+    --verbose             Show more diagnostics
+    --help                display this list of options.
 ```
 
 Currently, SOURCEDIR should contain all the files in flat structure. TARGETDIR is scanned recursively to find all the places to put the files.
