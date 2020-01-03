@@ -11,15 +11,6 @@
     <PackageLicenseUrl>/blob/master/LICENSE</PackageLicenseUrl>
     <Name>propagate</Name>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Tailcalls>false</Tailcalls>
-    <StartArguments>--aoe</StartArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Tailcalls>true</Tailcalls>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Globbing.fs"></Compile>
 
