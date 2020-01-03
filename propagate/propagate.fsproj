@@ -7,7 +7,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Authors>vivainio</Authors>
     <Copyright>Ville M. Vainio</Copyright>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/vivainio/Propagate</PackageProjectUrl>
     <PackageLicenseUrl>/blob/master/LICENSE</PackageLicenseUrl>
     <Name>propagate</Name>
   </PropertyGroup>
