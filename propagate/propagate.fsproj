@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>f68e4638-b796-48fd-8f6d-22a2f0c69578</ProjectGuid>
+    <ToolCommandName>propagate</ToolCommandName>
+    <PackAsTool>True</PackAsTool>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Authors>vivainio</Authors>
+    <Copyright>Ville M. Vainio</Copyright>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLicenseUrl>/blob/master/LICENSE</PackageLicenseUrl>
     <Name>propagate</Name>
-    <WarningLevel>3</WarningLevel>
-    <Prefer32Bit>true</Prefer32Bit>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
