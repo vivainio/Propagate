@@ -5,7 +5,7 @@ open Argu
 
 // something that looks like Python, just 'cause
 module OsPath = 
-    let fileName = Path.GetFileName
+    let fileName (p: string) = Path.GetFileName(p)
     let absPath = Path.GetFullPath
     let isDir = Directory.Exists
 

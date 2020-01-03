@@ -3,9 +3,8 @@
   <PropertyGroup>
     <ProjectGuid>f68e4638-b796-48fd-8f6d-22a2f0c69578</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <Name>propagate</Name>
     <WarningLevel>3</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -22,19 +21,12 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\paket-files\fsharp\FAKE\src\app\FakeLib\Globbing\Globbing.fs">
-      <Paket>True</Paket>
-      <Link>paket-files/Globbing.fs</Link>
-    </Compile>
+    <Compile Include="Globbing.fs"></Compile>
+
     <Compile Include="Program.fs">
     </Compile>
-    <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core">
-      <HintPath>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Argu" Version="6.0.0" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

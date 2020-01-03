@@ -1,6 +1,5 @@
 source https://www.nuget.org/api/v2/
-framework >= net452
+framework: auto-detect
 
 nuget System.ValueTuple 4.3.0
 nuget Argu 3.2.0
-github fsharp/FAKE src/app/FakeLib/Globbing/Globbing.fs
