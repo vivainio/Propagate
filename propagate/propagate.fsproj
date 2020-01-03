@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>f68e4638-b796-48fd-8f6d-22a2f0c69578</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Name>propagate</Name>
     <WarningLevel>3</WarningLevel>
