@@ -8,14 +8,9 @@ In .NET projects, this can be handy e.g. when you have compiled an own version o
 
 ## Installation:
 
-With [zippim](https://github.com/vivainio/zippim):
 ```
-zippim get https://github.com/vivainio/Propagate/releases/download/v0.2/propagate.zip
+$ dotnet tool install -g propagate
 ```
-
-(or just unzip that release directly, for less zippim-savvy users)
-
-
 
 Usage:
 
